@@ -9,7 +9,11 @@ PORT = 8820
 # the directory in which the files would be stored
 file_directory = 'C:\\Documents\\file_directory'
 if not os.path.exists(file_directory):
-    os.makedirs(file_directory)
+    try:
+        os.makedirs(file_directory)
+        print(f"[INFO] Directory created: {file_directory}")
+    except Exception as e:
+        print(f"[ERROR] Failed to create directory: {e}")
 
 # socket object
 server = socket.socket()
