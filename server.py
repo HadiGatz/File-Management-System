@@ -7,7 +7,7 @@ HOST = '127.0.0.1'
 PORT = 8820
 
 # the directory in which the files would be stored
-file_directory = 'C:\Documents\\file_directory'
+file_directory = 'C:\\Documents\\file_directory'
 if not os.path.exists(file_directory):
     os.makedirs(file_directory)
 
@@ -19,7 +19,7 @@ def handle_client(client_socket, client_address):
     file_name = client_socket.recv().decode()
     file_content = client_socket.recv()
 
-    with open(f"{file_directory}\{file_name}", 'wb') as file:
+    with open(f"{file_directory}\\{file_name}", 'wb') as file:
         file.write(file_content)
     client_socket.close()
 
@@ -29,6 +29,10 @@ def start_server():
     client_socket, client_address = server.accept()
     print(f"[HANDLING] {client_address}")
     handle_client(client_socket, client_address)
+
+running = True
+while running:
+    start_server()
     
 
 
