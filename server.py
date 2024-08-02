@@ -22,10 +22,16 @@ server.bind((HOST, PORT))
 def handle_client(client_socket, client_address):
     file_name = client_socket.recv(1024).decode()
     file_content = client_socket.recv(1024)
+    file_path = os.path.join(file_directory, file_name)
 
-    with open(f"{file_directory}\\{file_name}", 'wb') as file:
-        file.write(file_content)
-    client_socket.close()
+    with open(file_path, 'wb') as file:
+        while True:
+            file_content = client_socket.recv(1024)
+            if not file_content:
+                 break
+            file.write(file_content)
+
+    print(f"[RECEIVED] {file_name} from {client_address}")
 
 def start_server():
     server.listen()
