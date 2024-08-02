@@ -16,8 +16,8 @@ server = socket.socket()
 server.bind((HOST, PORT))
 
 def handle_client(client_socket, client_address):
-    file_name = client_socket.recv().decode()
-    file_content = client_socket.recv()
+    file_name = client_socket.recv(1024).decode()
+    file_content = client_socket.recv(1024)
 
     with open(f"{file_directory}\\{file_name}", 'wb') as file:
         file.write(file_content)
@@ -33,6 +33,7 @@ def start_server():
 running = True
 while running:
     start_server()
+    
     
 
 
