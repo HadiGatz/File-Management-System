@@ -7,7 +7,8 @@ HOST = '127.0.0.1'
 PORT = 8820
 
 # the directory in which the files would be stored
-file_directory = 'C:\\Documents\\file_directory'
+file_directory = 'C:\\Users\\User\\Documents\\file_directory'
+
 if not os.path.exists(file_directory):
     try:
         os.makedirs(file_directory)
