@@ -48,10 +48,15 @@ def handle_client_getting_file():
     file_name = server.recv(1024).decode()
     
     chosen_file_directory = os.path.join(file_directory, file_name)
-    with open(chosen_file_directory, 'rb') as f:
-        file_data = f.read()
+    try:
+        with open(chosen_file_directory, 'rb') as f:
+             file_data = f.read()
     
-    server.sendall(file_data)
+        server.sendall(file_data)
+    except Exception as e:
+        print(f"[ERROR]: Exception {e}")
+    finally:
+        server.close()
 
 def start_server():
     server.listen()
