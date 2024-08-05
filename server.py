@@ -5,6 +5,7 @@ from threading import Thread
 # server address and port
 HOST = '127.0.0.1'
 PORT = 8820
+list_of_files = []
 
 # the directory in which the files would be stored
 file_directory = 'C:\\Users\\User\\Documents\\file_directory'
@@ -26,6 +27,7 @@ def handle_client_sending_file(client_socket, client_address):
         print(file_name_length)
         file_name = client_socket.recv(file_name_length).decode(encoding='utf-8')
         print(file_name)
+        list_of_files.append(file_name)
         file_path = os.path.join(file_directory, file_name)
         
         with open(file_path, 'wb') as file:
@@ -40,6 +42,16 @@ def handle_client_sending_file(client_socket, client_address):
         print(f"[ERROR] An error occurred while handling the client: {e}")
     finally:
         client_socket.close()
+
+def handle_client_getting_file():
+    server.send(list_of_files.encode())
+    file_name = server.recv(1024).decode()
+    
+    chosen_file_directory = os.path.join(file_directory, file_name)
+    with open(chosen_file_directory, 'rb') as f:
+        file_data = f.read()
+    
+    server.sendall(file_data)
 
 def start_server():
     server.listen()
