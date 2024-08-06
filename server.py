@@ -59,34 +59,21 @@ def handle_client_getting_file(client_socket, client_address):
         server.close()
 
 def start_server():
-    server.listen()
-    print("[RUNNING]")
-    client_socket, client_address = server.accept()
-    print(f"[HANDLING] {client_address}")
-    user_command = client_socket.recv(1024).decode()
-    if user_command == "SAVEFILE":
-        handle_client_sending_file(client_socket, client_address)
-    elif user_command == "GETFILE" and len(list_of_files) > 0:
-        handle_client_getting_file(client_socket, client_address)
-    else:
-        print("[ERROR]: Invalid command")
+    while True:
 
-while True:
-    client_socket, client_address = server.accept()
-    print(f"[CONNECTED] Connection from {client_address}")
-
-    try:
+        server.listen()
+        print("[RUNNING]")
+        client_socket, client_address = server.accept()
+        print(f"[HANDLING] {client_address}")
         user_command = client_socket.recv(1024).decode()
         if user_command == "SAVEFILE":
-            handle_client_sending_file(client_socket)
+            handle_client_sending_file(client_socket, client_address)
         elif user_command == "GETFILE" and len(list_of_files) > 0:
-            handle_client_getting_file(client_socket)
+            handle_client_getting_file(client_socket, client_address)
         else:
-            print("[ERROR] Invalid command")
-    except Exception as e:
-        print(f"[ERROR] An error occurred while handling the client: {e}")
-    finally:
-        client_socket.close()
+            print("[ERROR]: Invalid command")
+
+start_server()
     
     
 
