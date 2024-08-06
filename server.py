@@ -1,6 +1,5 @@
 import os
-import socket 
-from threading import Thread
+import socket
 
 # server address and port
 HOST = '127.0.0.1'
@@ -17,16 +16,14 @@ if not os.path.exists(file_directory):
     except Exception as e:
         print(f"[ERROR] Failed to create directory: {e}")
 
-# socket object
-server = socket.socket()
+# create a socket object
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind((HOST, PORT))
 
 def handle_client_sending_file(client_socket, client_address):
     try:
         file_name_length = int.from_bytes(client_socket.recv(2), byteorder='big')
-        print(file_name_length)
         file_name = client_socket.recv(file_name_length).decode(encoding='utf-8')
-        print(file_name)
         list_of_files.append(file_name)
         file_path = os.path.join(file_directory, file_name)
         
@@ -44,39 +41,37 @@ def handle_client_sending_file(client_socket, client_address):
         client_socket.close()
 
 def handle_client_getting_file(client_socket, client_address):
-    server.send(list_of_files.encode())
-    file_name = client_socket.recv(1024).decode()
-    
-    chosen_file_directory = os.path.join(file_directory, file_name)
     try:
-        with open(chosen_file_directory, 'rb') as f:
-             file_data = f.read()
-    
-        server.sendall(file_data)
+        files_list = str(list_of_files)
+        client_socket.send(files_list.encode())
+
+        file_name = client_socket.recv(1024).decode()
+        chosen_file_path = os.path.join(file_directory, file_name)
+
+        with open(chosen_file_path, 'rb') as file:
+            file_data = file.read()
+            client_socket.sendall(file_data)
+
+        print(f"[SENT] {file_name} to {client_address}")
     except Exception as e:
-        print(f"[ERROR]: Exception {e}")
+        print(f"[ERROR] Exception {e}")
     finally:
-        server.close()
+        client_socket.close()
 
 def start_server():
+    server.listen()
+    print("[RUNNING] Server is running and listening for connections")
     while True:
-
-        server.listen()
-        print("[RUNNING]")
         client_socket, client_address = server.accept()
-        print(f"[HANDLING] {client_address}")
+        print(f"[CONNECTED] Connection from {client_address}")
+
         user_command = client_socket.recv(1024).decode()
         if user_command == "SAVEFILE":
             handle_client_sending_file(client_socket, client_address)
         elif user_command == "GETFILE" and len(list_of_files) > 0:
             handle_client_getting_file(client_socket, client_address)
         else:
-            print("[ERROR]: Invalid command")
+            print("[ERROR]: Invalid command or no files available")
+            client_socket.close()
 
 start_server()
-    
-    
-
-
-
-
